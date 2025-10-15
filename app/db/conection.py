@@ -86,6 +86,48 @@ class DatabaseConnection:
         except Exception as e:
             logging.error(f"Error inserting sensor data: {e}")
             raise e
+
+    def insert_giroscopio_data(self, sensor_value_ax=None, sensor_value_ay=None, sensor_value_az=None,
+                               sensor_value_gx=None, sensor_value_gy=None, sensor_value_gz=None):
+        """Insert gyroscope sensor data into the sensor_giroscopio table.
+
+        All parameters are optional; pass None to store NULLs.
+        Returns a dict with id_sensor and date_uploaded.
+        """
+        try:
+            query = """
+                INSERT INTO sensor_giroscopio (
+                    sensor_value_ax, sensor_value_ay, sensor_value_az,
+                    sensor_value_gx, sensor_value_gy, sensor_value_gz
+                ) VALUES (
+                    :sensor_value_ax, :sensor_value_ay, :sensor_value_az,
+                    :sensor_value_gx, :sensor_value_gy, :sensor_value_gz
+                )
+                RETURNING id_sensor, date_uploaded
+            """
+
+            params = {
+                'sensor_value_ax': sensor_value_ax,
+                'sensor_value_ay': sensor_value_ay,
+                'sensor_value_az': sensor_value_az,
+                'sensor_value_gx': sensor_value_gx,
+                'sensor_value_gy': sensor_value_gy,
+                'sensor_value_gz': sensor_value_gz,
+            }
+
+            result = self.execute_query(query, params)
+            row = result.fetchone()
+
+            if row:
+                return {
+                    'id_sensor': row[0],
+                    'date_uploaded': row[1]
+                }
+            else:
+                raise Exception("Failed to insert gyroscope data - no row returned")
+        except Exception as e:
+            logging.error(f"Error inserting gyroscope data: {e}")
+            raise e
     
     def close_connection(self):
         """Close database connection"""

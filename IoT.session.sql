@@ -1,6 +1,10 @@
-CREATE TABLE sensor_data_raw (
+CREATE TABLE sensor_giroscopio (
   id_sensor SERIAL PRIMARY KEY,
-  type_sensor VARCHAR(50) NULL,
-  sensor_value VARCHAR(50) NULL,
-  date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL
+  sensor_value_ax FLOAT NULL,
+  sensor_value_ay FLOAT NULL,
+  sensor_value_az FLOAT NULL,
+  sensor_value_gx FLOAT NULL,
+  sensor_value_gy FLOAT NULL,
+  sensor_value_gz FLOAT NULL,
+  date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL  
 );

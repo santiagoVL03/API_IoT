@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API IoT Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #121212;
+      color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1,
+    h3 {
+      color: #00bcd4;
+    }
+
+    .main-container {
+      padding: 2rem;
+      border-radius: 12px;
+      background-color: #1e1e1e;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+      margin-top: 2rem;
+    }
+
+    .alert {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .alert-info {
+      background-color: rgba(0, 188, 212, 0.1);
+      color: #00e5ff;
+      border-left: 4px solid #00bcd4;
+    }
+
+    .alert-success {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+      border-left: 4px solid #28a745;
+    }
+
+    .card {
+      background-color: #181818;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .card h3 {
+      color: #00bcd4;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .sensor-status {
+      font-weight: bold;
+      color: #ffc107;
+    }
+
+    #table-renderer-data {
+      background-color: #181818;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .table-dark-custom {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table-dark-custom th,
+    .table-dark-custom td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      text-align: center;
+    }
+
+    .table-dark-custom th {
+      background-color: #00bcd4;
+      color: #000;
+    }
+
+    .table-dark-custom tr:nth-child(even) {
+      background-color: #212121;
+    }
+
+    .table-dark-custom tr:hover {
+      background-color: rgba(0, 188, 212, 0.1);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .footer span {
+      color: #00bcd4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-container container-fluid container-lg">
+    <div class="mt-4">
+      <h1 class="text-center font-weight-bold">API IoT Dashboard</h1>
+      <div class="alert alert-info text-center mt-3">
+        En esta sección se mostrará información relevante sobre el estado del sistema IoT.
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="mb-3">
+        <h3>Estado del Sistema</h3>
+        <div id="system-status" class="alert alert-success">El sistema está funcionando correctamente.</div>
+      </div>
+
+      <div class="row">
+        <div class="card col-12 col-md-4 mb-3 p-3">
+          <h3>Sensor de Giroscopio</h3>
+          <div id="gyroscope-sensor">
+            <p>Estado: <span class="sensor-status">Desconocido</span></p>
+            <div id="gyroscope-data-graphic"></div>
+          </div>
+        </div>
+
+        <div class="card col-12 col-md-4 mb-3 p-3">
+          <h3>Sensor de Acelerómetro</h3>
+          <div id="accelerometer-sensor">
+            <p>Estado: <span class="sensor-status">Desconocido</span></p>
+          </div>
+        </div>
+
+        <div class="card col-12 col-md-4 mb-3 p-3">
+          <h3>Sensor de Proximidad</h3>
+          <div id="proximity-sensor">
+            <p>Estado: <span class="sensor-status">Desconocido</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12">
+          <h3>Datos Recientes de Sensores</h3>
+          <div id="table-renderer-data" class="mt-3">
+            <table class="table-dark-custom">
+              <thead>
+                <tr>
+                  <th>Sensor</th>
+                  <th>Valor</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Giroscopio</td>
+                  <td>0.98</td>
+                  <td>2025-10-10 12:45:33</td>
+                </tr>
+                <tr>
+                  <td>Acelerómetro</td>
+                  <td>1.24</td>
+                  <td>2025-10-10 12:45:33</td>
+                </tr>
+                <tr>
+                  <td>Proximidad</td>
+                  <td>10cm</td>
+                  <td>2025-10-10 12:45:33</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        &copy; 2025 <span>IoT Monitoring</span>. Todos los derechos reservados.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/api_fetching.js"></script>
+</body>
+
+</html>
