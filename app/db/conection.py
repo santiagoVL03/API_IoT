@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
@@ -5,11 +6,11 @@ import logging
 
 class DatabaseConnection:
     def __init__(self):
-        self.username = "arduino_user"
-        self.password = "arduino_pass"
-        self.host = "localhost"
-        self.port = 5432
-        self.database = "sensores"
+        self.username = os.getenv("DB_USER", "arduino_user")
+        self.password = os.getenv("DB_PASS", "arduino_pass")
+        self.host = os.getenv("DB_HOST", "localhost")
+        self.port = int(os.getenv("DB_PORT", 5432))
+        self.database = os.getenv("DB_NAME", "sensores")
         self.engine = None
         self.Session = None
         self._create_connection()

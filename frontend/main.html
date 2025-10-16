@@ -130,27 +130,27 @@
       </div>
 
       <div class="row">
-        <div class="card col-12 col-md-4 mb-3 p-3">
-          <h3>Sensor de Giroscopio</h3>
+        <div class="card col-12 col-md-6 mb-3 p-3">
+          <h3>Sensor de Giroscopio Tiempo Real</h3>
           <div id="gyroscope-sensor">
             <p>Estado: <span class="sensor-status">Desconocido</span></p>
             <div id="gyroscope-data-graphic"></div>
           </div>
         </div>
 
-        <div class="card col-12 col-md-4 mb-3 p-3">
-          <h3>Sensor de Acelerómetro</h3>
+        <div class="card col-12 col-md-6 mb-3 p-3">
+          <h3>Informacion del Giroscopio del dia</h3>
           <div id="accelerometer-sensor">
             <p>Estado: <span class="sensor-status">Desconocido</span></p>
           </div>
         </div>
 
-        <div class="card col-12 col-md-4 mb-3 p-3">
+        <!-- <div class="card col-12 col-md-4 mb-3 p-3">
           <h3>Sensor de Proximidad</h3>
           <div id="proximity-sensor">
             <p>Estado: <span class="sensor-status">Desconocido</span></p>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="row mt-4">
@@ -161,7 +161,9 @@
               <thead>
                 <tr>
                   <th>Sensor</th>
-                  <th>Valor</th>
+                  <th>
+                      <strong>Valor</strong>
+                  </th>
                   <th>Fecha</th>
                 </tr>
               </thead>
@@ -173,7 +175,13 @@
                 </tr>
                 <tr>
                   <td>Acelerómetro</td>
-                  <td>1.24</td>
+                  <td>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                      <div><strong>X:</strong> <span id="accelerometer-x">0.12</span></div>
+                      <div><strong>Y:</strong> <span id="accelerometer-y">0.34</span></div>
+                      <div><strong>Z:</strong> <span id="accelerometer-z">0.56</span></div>
+                    </div>
+                  </td>
                   <td>2025-10-10 12:45:33</td>
                 </tr>
                 <tr>

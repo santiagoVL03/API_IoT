@@ -12,5 +12,21 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  web:
+    build: .
+    environment:
+      - DB_USER=arduino_user
+      - DB_PASS=arduino_pass
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=sensores
+    command: gunicorn --bind 0.0.0.0:8000 wsgi:app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
 volumes:
   pgdata:
