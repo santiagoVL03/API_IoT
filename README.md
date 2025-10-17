@@ -135,7 +135,13 @@ Puedes usarlo libremente con fines educativos o de investigación.
 
 ---
 
-## Autor
+## Autores
 
-**SantiagoVL03** 
+- **Henry Aron Yanqui Vera**
+- **Freddy Leonel Humpiri Valdivia** 
+- **Santiago Javier Vilca Limachi** 
+- **Manuel Angel Nifla Llallacachi** 
+- **Sennayda Rimache Choquehuanca** 
+
+---
 Repositorio original: [github.com/santiagoVL03/API_IoT](https://github.com/santiagoVL03/API_IoT)
