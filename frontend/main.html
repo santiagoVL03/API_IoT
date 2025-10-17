@@ -111,6 +111,29 @@
     .footer span {
       color: #00bcd4;
     }
+
+    /* Gyroscope graphics styles */
+    #gyroscope-data-graphic, #gyroscope-day-graphic {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .axis {
+      color: #f8f9fa;
+    }
+
+    .axis text {
+      fill: #f8f9fa;
+      font-size: 10px;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #f8f9fa;
+      shape-rendering: crispEdges;
+    }
   </style>
 </head>
 
@@ -142,6 +165,7 @@
           <h3>Informacion del Giroscopio del dia</h3>
           <div id="accelerometer-sensor">
             <p>Estado: <span class="sensor-status">Desconocido</span></p>
+            <div id="gyroscope-day-graphic"></div>
           </div>
         </div>
 
@@ -212,6 +236,7 @@
     crossorigin="anonymous"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="js/api_fetching.js"></script>
+  <script src="js/api_graphics.js"></script>
 </body>
 
 </html>

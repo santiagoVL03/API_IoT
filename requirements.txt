@@ -5,3 +5,4 @@ pytest
 gunicorn
 flasgger
 psycopg2-binary
+Flask-Cors

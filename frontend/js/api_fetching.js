@@ -15,12 +15,9 @@ async function fetchData(endpoint) {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', async function() {
-	const endpoint_giroscopio_actual_data = apiurl + 'api/v1/iotgiroscopio/iotshow'; // Replace with your API endpoint
-	const endpoint_giroscopio_dia_data = apiurl + 'api/v1/iotgiroscopio/iotshowday'; // Replace with your API endpoint
+// Main data fetching functions
+// Graphics are now handled by api_graphics.js
 
-	while (true) {
-		var last_data = await fetchData(endpoint); 
-
-	}
+document.addEventListener('DOMContentLoaded', function() {
+	console.log('API fetching module loaded');
 });

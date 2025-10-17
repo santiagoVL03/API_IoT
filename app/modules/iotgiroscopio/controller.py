@@ -72,3 +72,35 @@ class IotgiroscopioController:
                 'error': 'Failed to fetch last gyroscope data',
                 'details': str(e),
             }
+            
+    def show_last_day_data(self):
+        """Show gyroscope sensor data from the last 24 hours."""
+        try:
+            query = """
+                SELECT id_sensor, sensor_value_ax, sensor_value_ay, sensor_value_az,
+                       sensor_value_gx, sensor_value_gy, sensor_value_gz, date_uploaded
+                FROM sensor_giroscopio
+                WHERE date_uploaded >= NOW() - INTERVAL '1 day'
+                ORDER BY date_uploaded DESC
+            """
+            result = self.db.execute_query(query)
+            rows = result.fetchall()
+            data = []
+            for row in rows:
+                data.append({
+                    'id_sensor': row[0],
+                    'ax': row[1],
+                    'ay': row[2],
+                    'az': row[3],
+                    'gx': row[4],
+                    'gy': row[5],
+                    'gz': row[6],
+                    'date_uploaded': row[7].isoformat() if row[7] else None,
+                })
+            return data if data else {'message': 'No gyroscope data found in the last 24 hours'}
+        except Exception as e:
+            logging.error(f"Error fetching last day gyroscope data: {e}")
+            return {
+                'error': 'Failed to fetch last day gyroscope data',
+                'details': str(e),
+            }

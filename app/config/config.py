@@ -4,6 +4,22 @@ class BaseConfig:
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'your-secret-key'
+    
+    # CORS configuration
+    CORS_ORIGINS = [
+        "http://localhost:3000",
+        "http://localhost:8080", 
+        "http://localhost:5000",
+        "http://localhost:5173",
+        "http://localhost:4200",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:5000", 
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:4200",
+        "file://",
+        "null"
+    ]
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""
@@ -20,6 +36,12 @@ class ProductionConfig(BaseConfig):
     """Production configuration."""
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///production.db'
+    
+    # Production CORS - more restrictive
+    CORS_ORIGINS = [
+        "https://yourdomain.com",
+        "https://www.yourdomain.com"
+    ]
 
 
 def get_config_by_name(config_name):

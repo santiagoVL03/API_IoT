@@ -66,9 +66,16 @@ def index():
     result = iotgiroscopio_controller.insert_giroscopio(ax, ay, az, gx, gy, gz)
     status_code = 200 if result.get('success', True) else 400
     return make_response(jsonify(data=result), status_code)
-      
-@iotgiroscopio_bp.route('/iotshow', methods=['GET'])
-def show_index():
-    """Show index message."""
+
+@iotgiroscopio_bp.route('/last', methods=['GET'])
+def show_last():
+    """Show last gyroscope sensor data."""
     result = iotgiroscopio_controller.show_last_data()
+    return make_response(jsonify(data=result), 200)
+
+
+@iotgiroscopio_bp.route('/last_day', methods=['GET'])
+def show_last_day():
+    """Show gyroscope sensor data from the last 24 hours."""
+    result = iotgiroscopio_controller.show_last_day_data()
     return make_response(jsonify(data=result), 200)
