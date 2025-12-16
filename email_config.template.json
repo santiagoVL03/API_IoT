@@ -1,0 +1,16 @@
+{
+  "_comment": "Email configuration template - Copy this to email_config.json and add your credentials",
+  "smtp_server": "smtp.gmail.com",
+  "smtp_port": 587,
+  "email_username": "your-email@gmail.com",
+  "email_password": "your-app-password-here",
+  "recipients": [
+    "recipient1@example.com",
+    "recipient2@example.com"
+  ],
+  "_instructions": {
+    "gmail_app_password": "For Gmail, use an App Password: https://support.google.com/accounts/answer/185833",
+    "recipients": "Add one or more email addresses to receive fire alerts",
+    "environment_variables": "Alternatively, use environment variables: EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_RECIPIENTS"
+  }
+}

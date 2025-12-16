@@ -6,3 +6,6 @@ gunicorn
 flasgger
 psycopg2-binary
 Flask-Cors
+requests
+opencv-python
+numpy

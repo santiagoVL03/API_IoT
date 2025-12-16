@@ -114,3 +114,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Email configuration (contains sensitive credentials)
+email_config.json
+
+# Environment variables
+.env
+.env.local

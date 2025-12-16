@@ -130,6 +130,80 @@ class DatabaseConnection:
             logging.error(f"Error inserting gyroscope data: {e}")
             raise e
     
+    def insert_humedad_data(self, sensor_value_humedad=None, sensor_value_temperatura=None):
+        """Insert humidity sensor data into the sensor_humedad table.
+
+        All parameters are optional; pass None to store NULLs.
+        Returns a dict with id_sensor and date_uploaded.
+        """
+        try:
+            query = """
+                INSERT INTO sensor_humedad (
+                    sensor_value_humedad, sensor_value_temperatura
+                ) VALUES (
+                    :sensor_value_humedad, :sensor_value_temperatura
+                )
+                RETURNING id_sensor, date_uploaded
+            """
+
+            params = {
+                'sensor_value_humedad': sensor_value_humedad,
+                'sensor_value_temperatura': sensor_value_temperatura,
+            }
+
+            result = self.execute_query(query, params)
+            row = result.fetchone()
+
+            if row:
+                return {
+                    'id_sensor': row[0],
+                    'date_uploaded': row[1]
+                }
+            else:
+                raise Exception("Failed to insert humidity data - no row returned")
+        except Exception as e:
+            logging.error(f"Error inserting humidity data: {e}")
+            raise e
+    
+    def insert_fire_alert(self, ip_camera: str, alert_status: str):
+        """Insert fire alert into the fire_sensor_alerts table.
+        
+        Args:
+            ip_camera: IP address/URL of the camera
+            alert_status: Status of the alert (e.g., 'FIRE_DETECTED', 'NO_FIRE', 'ERROR')
+            
+        Returns:
+            dict with id_alert and date_uploaded
+        """
+        try:
+            query = """
+                INSERT INTO fire_sensor_alerts (
+                    ip_camera, alert_status
+                ) VALUES (
+                    :ip_camera, :alert_status
+                )
+                RETURNING id_alert, date_uploaded
+            """
+            
+            params = {
+                'ip_camera': ip_camera,
+                'alert_status': alert_status
+            }
+            
+            result = self.execute_query(query, params)
+            row = result.fetchone()
+            
+            if row:
+                return {
+                    'id_alert': row[0],
+                    'date_uploaded': row[1]
+                }
+            else:
+                raise Exception("Failed to insert fire alert - no row returned")
+        except Exception as e:
+            logging.error(f"Error inserting fire alert: {e}")
+            raise e
+    
     def close_connection(self):
         """Close database connection"""
         if self.engine:

@@ -1,3 +1,5 @@
+from app.modules.iotcamera.route import iotcamera_bp
+from app.modules.iothumedad.route import iothumedad_bp
 from flask import Flask
 from flasgger import Swagger
 from app.db.db import db
@@ -50,6 +52,8 @@ def initialize_cors(app: Flask):
 
 def initialize_route(app: Flask):
     with app.app_context():
+        app.register_blueprint(iotcamera_bp, url_prefix='/api/v1/iotcamera')
+        app.register_blueprint(iothumedad_bp, url_prefix='/api/v1/iothumedad')
         app.register_blueprint(iotgiroscopio_bp, url_prefix='/api/v1/iotgiroscopio')
         app.register_blueprint(iotinsert_bp, url_prefix='/api/v1/iotinsert')
         app.register_blueprint(main_bp, url_prefix='/api/v1/main')
