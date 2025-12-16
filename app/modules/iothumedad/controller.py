@@ -11,7 +11,7 @@ class IothumedadController:
         self.email_util = EmailUtil()  # Will load config from email_config.json or env vars
         # Get camera URL from environment variable or use default
         # Common endpoints for IP Webcam app: /video, /videofeed, or just the IP
-        self.camera_url = os.getenv('CAMERA_URL', 'http://192.168.2.102:8080')
+        self.camera_url = os.getenv('CAMERA_URL', 'http://10.7.134.127:8080')
     
     def index(self):
         return {'message':'Hello, World!'}
@@ -177,25 +177,25 @@ class IothumedadController:
                 logging.info(f"Fire alert saved to database (ID: {alert_result['id_alert']})")
                 
                 # Send email notification
-                try:
-                    logging.info("Sending email notification...")
-                    email_result = self.email_util.send_fire_alert_email(
-                        fire_detected=fire_detected,
-                        detection_results=detection_results,
-                        camera_url=self.camera_url,
-                        alert_id=alert_result['id_alert']
-                    )
-                    
-                    if email_result['success']:
-                        logging.info(f"Email sent successfully to {email_result['total_sent']} recipient(s)")
-                        logging.info(f"Email details: {email_result['results']}")
-                    else:
-                        logging.error(f"Failed to send email: {email_result}")
+                if fire_detected:
+                    try:
+                        logging.info("Sending email notification...")
+                        email_result = self.email_util.send_fire_alert_email(
+                            fire_detected=fire_detected,
+                            detection_results=detection_results,
+                            camera_url=self.camera_url,
+                            alert_id=alert_result['id_alert']
+                        )
                         
-                except Exception as email_error:
-                    logging.error(f"Failed to send email notification: {email_error}")
-                    # Continue anyway - email failure shouldn't block the process
-                
+                        if email_result['success']:
+                            logging.info(f"Email sent successfully to {email_result['total_sent']} recipient(s)")
+                            logging.info(f"Email details: {email_result['results']}")
+                        else:
+                            logging.error(f"Failed to send email: {email_result}")
+                            
+                    except Exception as email_error:
+                        logging.error(f"Failed to send email notification: {email_error}")
+                # Continue anyway - email failure shouldn't block the process
                 return {
                     'success': True,
                     'fire_detected': fire_detected,

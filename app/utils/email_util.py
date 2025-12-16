@@ -129,7 +129,7 @@ class EmailUtil:
             dict with email sending results
         """
         if fire_detected:
-            subject = "🔥 FIRE ALERT - Fire Detected by IoT System!"
+            subject = "FIRE ALERT - Fire Detected by IoT System!"
             body = self._create_fire_detected_email_body(detection_results, camera_url, alert_id)
         else:
             subject = "✓ Fire Check Complete - No Fire Detected"
@@ -150,7 +150,7 @@ class EmailUtil:
         video_duration = detection_results.get('video_duration', 0)
         
         body = f"""
-🚨 FIRE ALERT - IMMEDIATE ACTION REQUIRED 🚨
+FIRE ALERT - IMMEDIATE ACTION REQUIRED
 
 This is an automated alert from your IoT Fire Detection System.
 
@@ -174,12 +174,12 @@ Frames with Fire:   {frames_with_fire}
 RECOMMENDED ACTIONS
 ═══════════════════════════════════════════════════════════
 
-1. ⚠️  EVACUATE the area immediately if safe to do so
-2. 📞 CALL emergency services (911 or local fire department)
-3. 🔍 VERIFY the alert by checking the camera feed manually
-4. 🚪 CLOSE doors and windows to contain the fire
-5. 🧯 Use fire extinguisher ONLY if fire is small and contained
-6. ⛔ DO NOT attempt to fight large fires
+1. EVACUATE the area immediately if safe to do so
+2. CALL emergency services (911 or local fire department)
+3. VERIFY the alert by checking the camera feed manually
+4. CLOSE doors and windows to contain the fire
+5. Use fire extinguisher ONLY if fire is small and contained
+6. DO NOT attempt to fight large fires
 
 ═══════════════════════════════════════════════════════════
 SYSTEM INFORMATION

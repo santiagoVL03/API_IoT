@@ -141,9 +141,11 @@ class DetectionUtil:
             
             cap.release()
             
+            maximum_percentage_fire_frames = 25.0
+            
             # Determine overall fire presence
-            fire_detected_overall = frames_with_fire > 0
             fire_percentage = (frames_with_fire / frame_count * 100) if frame_count > 0 else 0
+            fire_detected_overall = frames_with_fire > 0 and fire_percentage > maximum_percentage_fire_frames
             
             # Calculate average confidence for detected frames
             avg_confidence = 0.0
@@ -261,7 +263,7 @@ class DetectionUtil:
             fire_detections = []
             
             if len(indices) > 0:
-                for i in indices.flatten():
+                for i in indices.flatten(): # type: ignore
                     class_id = class_ids[i]
                     confidence = confidences[i]
                     box = boxes[i]
@@ -421,11 +423,11 @@ class DetectionUtil:
         
         # Common camera stream endpoints to try
         stream_endpoints = [
-            camera_url,  # Try base URL first
             f"{camera_url}/video",  # IP Webcam app common endpoint
             f"{camera_url}/videofeed",  # Another common endpoint
             f"{camera_url}/mjpeg",  # MJPEG stream
             f"{camera_url}/stream",  # Generic stream endpoint
+            camera_url,  # Try base URL first
         ]
         
         # Try each endpoint until one works
@@ -492,7 +494,7 @@ class DetectionUtil:
             temp_video_path = os.path.join(temp_dir, f"camera_capture_{timestamp}.mp4")
             
             # Define codec and create VideoWriter
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v') # type: ignore
             out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
             
             if not out.isOpened():
