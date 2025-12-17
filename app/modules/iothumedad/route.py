@@ -96,4 +96,16 @@ def insert():
     status_code = 200 if result.get('success', True) else 400
     return make_response(jsonify(data=result), status_code)
 
-      
+@iothumedad_bp.route('/show_last', methods=['GET'])
+def show_last():
+  """Show last humidity sensor data."""
+  result = iothumedad_controller.get_last_humedad_data()
+  status_code = 200 if result.get('success', True) else 400
+  return make_response(jsonify(data=result), status_code)
+
+@iothumedad_bp.route('/show_last_warning', methods=['GET'])
+def show_last_warning():
+  """Show last humidity sensor warning data."""
+  result = iothumedad_controller.get_last_humedad_warning_data()
+  status_code = 200 if result.get('success', True) else 400
+  return make_response(jsonify(data=result), status_code)

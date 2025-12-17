@@ -134,6 +134,64 @@
       stroke: #f8f9fa;
       shape-rendering: crispEdges;
     }
+
+    /* Fire detection semaphore styles */
+    .semaphore-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      gap: 1rem;
+    }
+
+    .semaphore {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #333;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .semaphore.white {
+      background-color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .semaphore.green {
+      background-color: #28a745;
+      box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+    }
+
+    .semaphore.yellow {
+      background-color: #ffc107;
+      box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+    }
+
+    .semaphore.red {
+      background-color: #dc3545;
+      box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+      animation: pulse-red 1s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .semaphore-label {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .fire-status-info {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 
@@ -168,13 +226,34 @@
             <div id="gyroscope-day-graphic"></div>
           </div>
         </div>
+      </div>
 
-        <!-- <div class="card col-12 col-md-4 mb-3 p-3">
-          <h3>Sensor de Proximidad</h3>
-          <div id="proximity-sensor">
+      <!-- Fire Detection Monitoring Section -->
+      <div class="row mt-4">
+        <div class="card col-12 col-md-8 mb-3 p-3">
+          <h3>Monitoreo de Temperatura y Humedad en Tiempo Real</h3>
+          <div id="temperature-humidity-sensor">
             <p>Estado: <span class="sensor-status">Desconocido</span></p>
+            <div id="temperature-humidity-graphic"></div>
           </div>
-        </div> -->
+        </div>
+
+        <div class="card col-12 col-md-4 mb-3 p-3">
+          <h3>Estado de Alerta de Incendio</h3>
+          <div id="fire-alert-sensor">
+            <div class="semaphore-container">
+              <div>
+                <div id="fire-semaphore" class="semaphore white"></div>
+                <div class="semaphore-label">Estado de Alerta</div>
+              </div>
+            </div>
+            <div id="fire-status-info" class="fire-status-info">
+              <strong>Estado:</strong> <span id="fire-status-text">Sin datos</span><br>
+              <strong>Confianza:</strong> <span id="fire-confidence">N/A</span><br>
+              <strong>Última actualización:</strong> <span id="fire-last-update">N/A</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="row mt-4">
@@ -191,7 +270,7 @@
                   <th>Fecha</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="sensor-table-body">
                 <tr>
                   <td>Giroscopio</td>
                   <td>0.98</td>
@@ -209,9 +288,19 @@
                   <td>2025-10-10 12:45:33</td>
                 </tr>
                 <tr>
-                  <td>Proximidad</td>
-                  <td>10cm</td>
-                  <td>2025-10-10 12:45:33</td>
+                  <td>Temperatura</td>
+                  <td id="temp-value">--</td>
+                  <td id="temp-date">--</td>
+                </tr>
+                <tr>
+                  <td>Humedad</td>
+                  <td id="humidity-value">--</td>
+                  <td id="humidity-date">--</td>
+                </tr>
+                <tr>
+                  <td>Detector de Incendio</td>
+                  <td id="fire-value">--</td>
+                  <td id="fire-date">--</td>
                 </tr>
               </tbody>
             </table>

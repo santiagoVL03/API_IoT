@@ -4,7 +4,7 @@ class GyroscopeGraphics {
     constructor() {
         this.realtimeData = [];
         this.maxRealtimePoints = 20; // Keep last 20 points for real-time graph
-        this.apiUrl = 'http://localhost:8000/';
+        this.apiUrl = 'http://localhost:5000/';
         
         this.initializeGraphics();
         this.startDataFetching();
@@ -364,7 +364,305 @@ class GyroscopeGraphics {
     }
 }
 
+// Fire Detection Monitoring Class
+class FireDetectionMonitor {
+    constructor() {
+        this.temperatureHumidityData = [];
+        this.maxDataPoints = 30; // Keep last 30 points
+        this.apiUrl = 'http://localhost:5000/';
+        this.lastDataId = null; // Track last data to avoid duplicates
+        this.lastAlertId = null; // Track last alert to avoid duplicates
+        
+        this.initializeGraphics();
+        this.startMonitoring();
+    }
+
+    initializeGraphics() {
+        this.createTemperatureHumidityGraph();
+    }
+
+    createTemperatureHumidityGraph() {
+        const container = d3.select("#temperature-humidity-graphic");
+        container.selectAll("*").remove();
+
+        const margin = { top: 30, right: 60, bottom: 30, left: 60 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        const svg = container
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Create scales
+        this.tempHumXScale = d3.scaleTime().range([0, width]);
+        this.tempYScale = d3.scaleLinear().range([height, 0]);
+        this.humidityYScale = d3.scaleLinear().range([height, 0]);
+
+        // Create axes
+        this.tempHumXAxis = g.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .attr("class", "x-axis");
+
+        this.tempYAxis = g.append("g")
+            .attr("class", "y-axis temp-axis");
+
+        this.humidityYAxis = g.append("g")
+            .attr("transform", `translate(${width},0)`)
+            .attr("class", "y-axis humidity-axis");
+
+        // Create line generators
+        this.tempLine = d3.line()
+            .x(d => this.tempHumXScale(d.date))
+            .y(d => this.tempYScale(d.temperature))
+            .curve(d3.curveMonotoneX);
+
+        this.humidityLine = d3.line()
+            .x(d => this.tempHumXScale(d.date))
+            .y(d => this.humidityYScale(d.humidity))
+            .curve(d3.curveMonotoneX);
+
+        // Create paths
+        this.tempPath = g.append("path")
+            .attr("class", "line-temp")
+            .attr("fill", "none")
+            .attr("stroke", "#ff6b6b")
+            .attr("stroke-width", 3);
+
+        this.humidityPath = g.append("path")
+            .attr("class", "line-humidity")
+            .attr("fill", "none")
+            .attr("stroke", "#4ecdc4")
+            .attr("stroke-width", 3);
+
+        // Add legend
+        const legend = g.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${width - 150}, 20)`);
+
+        legend.append("rect")
+            .attr("width", 140)
+            .attr("height", 50)
+            .attr("fill", "rgba(0,0,0,0.7)")
+            .attr("stroke", "#666");
+
+        legend.append("line").attr("x1", 5).attr("x2", 25).attr("y1", 15).attr("y2", 15).attr("stroke", "#ff6b6b").attr("stroke-width", 3);
+        legend.append("text").attr("x", 30).attr("y", 19).text("Temperatura (°C)").attr("fill", "white").attr("font-size", "12px");
+
+        legend.append("line").attr("x1", 5).attr("x2", 25).attr("y1", 35).attr("y2", 35).attr("stroke", "#4ecdc4").attr("stroke-width", 3);
+        legend.append("text").attr("x", 30).attr("y", 39).text("Humedad (%)").attr("fill", "white").attr("font-size", "12px");
+
+        // Add axis labels
+        g.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 10)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .style("fill", "#ff6b6b")
+            .text("Temperatura (°C)");
+
+        g.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", width + margin.right - 10)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .style("fill", "#4ecdc4")
+            .text("Humedad (%)");
+
+        g.append("text")
+            .attr("transform", `translate(${width / 2}, ${height + margin.bottom})`)
+            .style("text-anchor", "middle")
+            .style("fill", "white")
+            .text("Tiempo");
+    }
+
+    async fetchData(endpoint) {
+        try {
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return null;
+        }
+    }
+
+    async updateTemperatureHumidityGraph() {
+        const endpoint = this.apiUrl + 'api/v1/iothumedad/show_last';
+        const response = await this.fetchData(endpoint);
+        
+        if (response && response.data && response.data.success) {
+            const data = response.data.data;
+            
+            // Check if this is new data (avoid duplicates)
+            if (this.lastDataId !== data.id_sensor) {
+                this.lastDataId = data.id_sensor;
+                
+                const dataPoint = {
+                    date: new Date(data.date_uploaded),
+                    temperature: data.sensor_value_temperatura,
+                    humidity: data.sensor_value_humedad
+                };
+                
+                this.temperatureHumidityData.push(dataPoint);
+                
+                // Keep only last maxDataPoints
+                if (this.temperatureHumidityData.length > this.maxDataPoints) {
+                    this.temperatureHumidityData = this.temperatureHumidityData.slice(-this.maxDataPoints);
+                }
+                
+                // Update scales
+                const xExtent = d3.extent(this.temperatureHumidityData, d => d.date);
+                const tempExtent = d3.extent(this.temperatureHumidityData, d => d.temperature);
+                const humidityExtent = d3.extent(this.temperatureHumidityData, d => d.humidity);
+                
+                this.tempHumXScale.domain(xExtent);
+                this.tempYScale.domain([Math.min(0, tempExtent[0] - 5), tempExtent[1] + 5]);
+                this.humidityYScale.domain([0, 100]);
+                
+                // Update axes
+                this.tempHumXAxis.call(d3.axisBottom(this.tempHumXScale)
+                    .ticks(5)
+                    .tickFormat(d3.timeFormat("%H:%M:%S")));
+                this.tempYAxis.call(d3.axisLeft(this.tempYScale));
+                this.humidityYAxis.call(d3.axisRight(this.humidityYScale));
+                
+                // Update lines
+                this.tempPath.datum(this.temperatureHumidityData)
+                    .attr("d", this.tempLine);
+                this.humidityPath.datum(this.temperatureHumidityData)
+                    .attr("d", this.humidityLine);
+                
+                // Update table
+                this.updateSensorTable(data);
+                
+                // Update status
+                document.querySelector("#temperature-humidity-sensor .sensor-status").textContent = "Activo";
+                document.querySelector("#temperature-humidity-sensor .sensor-status").style.color = "#28a745";
+            }
+        } else {
+            document.querySelector("#temperature-humidity-sensor .sensor-status").textContent = "Error";
+            document.querySelector("#temperature-humidity-sensor .sensor-status").style.color = "#dc3545";
+        }
+    }
+
+    async updateFireAlertStatus() {
+        const endpoint = this.apiUrl + 'api/v1/iothumedad/show_last_warning';
+        const response = await this.fetchData(endpoint);
+        
+        if (response && response.data && response.data.success) {
+            const data = response.data.data;
+            
+            // Check if this is new data (avoid duplicates)
+            if (this.lastAlertId !== data.id_alert) {
+                this.lastAlertId = data.id_alert;
+                
+                const alertDate = new Date(data.date_uploaded);
+                const today = new Date();
+                const isToday = alertDate.toDateString() === today.toDateString();
+                
+                // Parse alert status to extract confidence percentage
+                let confidence = 0;
+                let statusText = data.alert_status;
+                
+                const confidenceMatch = data.alert_status.match(/Confidence:\s*([\d.]+)%/);
+                if (confidenceMatch) {
+                    confidence = parseFloat(confidenceMatch[1]);
+                }
+                
+                // Determine semaphore color based on confidence and date
+                const semaphore = document.getElementById('fire-semaphore');
+                let color = 'white';
+                let statusMessage = 'Sin alertas del día';
+                
+                if (!isToday) {
+                    color = 'white';
+                    statusMessage = 'Datos no actuales';
+                } else if (confidence < 20) {
+                    color = 'green';
+                    statusMessage = 'Nivel Seguro';
+                } else if (confidence >= 20 && confidence < 50) {
+                    color = 'yellow';
+                    statusMessage = 'Precaución';
+                } else if (confidence >= 50) {
+                    color = 'red';
+                    statusMessage = '¡ALERTA DE INCENDIO!';
+                }
+                
+                // Update semaphore
+                semaphore.className = `semaphore ${color}`;
+                
+                // Update status info
+                document.getElementById('fire-status-text').textContent = statusMessage;
+                document.getElementById('fire-confidence').textContent = `${confidence.toFixed(2)}%`;
+                document.getElementById('fire-last-update').textContent = alertDate.toLocaleString('es-ES');
+                
+                // Update table
+                this.updateFireTable(data);
+            }
+        } else {
+            // No data available
+            const semaphore = document.getElementById('fire-semaphore');
+            semaphore.className = 'semaphore white';
+            document.getElementById('fire-status-text').textContent = 'Sin datos';
+            document.getElementById('fire-confidence').textContent = 'N/A';
+            document.getElementById('fire-last-update').textContent = 'N/A';
+        }
+    }
+
+    updateSensorTable(data) {
+        const tempValue = document.getElementById('temp-value');
+        const tempDate = document.getElementById('temp-date');
+        const humidityValue = document.getElementById('humidity-value');
+        const humidityDate = document.getElementById('humidity-date');
+        
+        if (tempValue && tempDate && humidityValue && humidityDate) {
+            const date = new Date(data.date_uploaded).toLocaleString('es-ES');
+            tempValue.textContent = `${data.sensor_value_temperatura.toFixed(2)}°C`;
+            tempDate.textContent = date;
+            humidityValue.textContent = `${data.sensor_value_humedad.toFixed(2)}%`;
+            humidityDate.textContent = date;
+        }
+    }
+
+    updateFireTable(data) {
+        const fireValue = document.getElementById('fire-value');
+        const fireDate = document.getElementById('fire-date');
+        
+        if (fireValue && fireDate) {
+            const date = new Date(data.date_uploaded).toLocaleString('es-ES');
+            fireValue.textContent = data.alert_status;
+            fireDate.textContent = date;
+        }
+    }
+
+    startMonitoring() {
+        // Update temperature/humidity graph every 2 seconds
+        setInterval(() => {
+            this.updateTemperatureHumidityGraph();
+        }, 2000);
+        
+        // Update fire alert status every 3 seconds
+        setInterval(() => {
+            this.updateFireAlertStatus();
+        }, 3000);
+        
+        // Initial updates
+        this.updateTemperatureHumidityGraph();
+        this.updateFireAlertStatus();
+    }
+}
+
 // Initialize graphics when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     new GyroscopeGraphics();
+    new FireDetectionMonitor();
 });

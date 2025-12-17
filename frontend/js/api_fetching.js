@@ -1,5 +1,5 @@
 // apiurl = 'http://10.7.134.119:5000/';
-apiurl = 'http://localhost:8000/';
+apiurl = 'http://localhost:5000/';
 
 async function fetchData(endpoint) {
 	try {

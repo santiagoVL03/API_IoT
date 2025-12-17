@@ -230,3 +230,71 @@ class IothumedadController:
                 'success': False,
                 'error': str(e)
             }
+
+    def get_last_humedad_data(self):
+        """Retrieve the last humidity sensor data from the database."""
+        try:
+            query = """
+                SELECT id_sensor, sensor_value_humedad, sensor_value_temperatura, date_uploaded
+                FROM sensor_humedad
+                ORDER BY id_sensor DESC
+                LIMIT 1
+            """
+            result = self.db.execute_query(query)
+            row = result.fetchone()
+            if row:
+                return {
+                    'message': 'Last humidity sensor data retrieved successfully',
+                    'success': True,
+                    'data': {
+                        'id_sensor': row[0],
+                        'sensor_value_humedad': row[1],
+                        'sensor_value_temperatura': row[2],
+                        'date_uploaded': row[3].isoformat() if row[3] else None
+                    }
+                }
+            else:
+                return {
+                    'message': 'No humidity sensor data found',
+                    'success': False
+                }
+        except Exception as e:
+            logging.error(f"Error retrieving last humidity sensor data: {e}")
+            return {
+                'error': f'Failed to retrieve last humidity sensor data: {str(e)}',
+                'success': False
+            }
+            
+    def get_last_humedad_warning_data(self):
+        """Retrieve the last humidity sensor data that triggered a warning."""
+        try:
+            query = """
+                SELECT id_alert, ip_camera, date_uploaded, alert_status
+                FROM fire_sensor_alerts fsa
+                ORDER BY id_alert DESC
+                LIMIT 1
+            """
+            result = self.db.execute_query(query)
+            row = result.fetchone()
+            if row:
+                return {
+                    'message': 'Last humidity warning sensor data retrieved successfully',
+                    'success': True,
+                    'data': {
+                        'id_alert': row[0],
+                        'ip_camera': row[1],
+                        'date_uploaded': row[2].isoformat() if row[2] else None,
+                        'alert_status': row[3]
+                    }
+                }
+            else:
+                return {
+                    'message': 'No humidity warning sensor data found',
+                    'success': False
+                }
+        except Exception as e:
+            logging.error(f"Error retrieving last humidity warning sensor data: {e}")
+            return {
+                'error': f'Failed to retrieve last humidity warning sensor data: {str(e)}',
+                'success': False
+            }
