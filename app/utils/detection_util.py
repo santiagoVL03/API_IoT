@@ -141,7 +141,7 @@ class DetectionUtil:
             
             cap.release()
             
-            maximum_percentage_fire_frames = 25.0
+            maximum_percentage_fire_frames = 0
             
             # Determine overall fire presence
             fire_percentage = (frames_with_fire / frame_count * 100) if frame_count > 0 else 0

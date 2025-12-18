@@ -82,6 +82,7 @@ class IotgiroscopioController:
                 FROM sensor_giroscopio
                 WHERE date_uploaded >= NOW() - INTERVAL '1 day'
                 ORDER BY date_uploaded DESC
+                LIMIT 100
             """
             result = self.db.execute_query(query)
             rows = result.fetchall()

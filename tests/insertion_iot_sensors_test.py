@@ -2,7 +2,7 @@ import random
 import time
 import requests
 
-BASE_URL = "http://localhost:8000/api/v1/iotgiroscopio/"
+BASE_URL = "http://localhost:5000/api/v1/iotgiroscopio/"
 
 def generate_random_data():
     """Genera valores aleatorios simulando datos de giroscopio."""

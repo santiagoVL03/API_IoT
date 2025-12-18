@@ -557,9 +557,11 @@ class FireDetectionMonitor {
     async updateFireAlertStatus() {
         const endpoint = this.apiUrl + 'api/v1/iothumedad/show_last_warning';
         const response = await this.fetchData(endpoint);
+        console.log(response);
         
         if (response && response.data && response.data.success) {
             const data = response.data.data;
+            console.log(data);
             
             // Check if this is new data (avoid duplicates)
             if (this.lastAlertId !== data.id_alert) {
@@ -567,8 +569,17 @@ class FireDetectionMonitor {
                 
                 const alertDate = new Date(data.date_uploaded);
                 const today = new Date();
-                const isToday = alertDate.toDateString() === today.toDateString();
-                
+                const isSameDay = (d1, d2) =>
+                    d1.getFullYear() === d2.getFullYear() &&
+                    d1.getMonth() === d2.getMonth() &&
+                    d1.getDate() === d2.getDate();
+
+                const tomorrow = new Date(today);
+                    tomorrow.setDate(today.getDate() + 1);
+
+                const isTodayOrTomorrow =
+                    isSameDay(alertDate, today) || isSameDay(alertDate, tomorrow);
+
                 // Parse alert status to extract confidence percentage
                 let confidence = 0;
                 let statusText = data.alert_status;
@@ -576,6 +587,7 @@ class FireDetectionMonitor {
                 const confidenceMatch = data.alert_status.match(/Confidence:\s*([\d.]+)%/);
                 if (confidenceMatch) {
                     confidence = parseFloat(confidenceMatch[1]);
+                    console.log('Extracted confidence:', confidence);
                 }
                 
                 // Determine semaphore color based on confidence and date
@@ -583,7 +595,7 @@ class FireDetectionMonitor {
                 let color = 'white';
                 let statusMessage = 'Sin alertas del día';
                 
-                if (!isToday) {
+                if (!isTodayOrTomorrow) {
                     color = 'white';
                     statusMessage = 'Datos no actuales';
                 } else if (confidence < 20) {
@@ -648,12 +660,12 @@ class FireDetectionMonitor {
         // Update temperature/humidity graph every 2 seconds
         setInterval(() => {
             this.updateTemperatureHumidityGraph();
-        }, 2000);
+        }, 1000);
         
         // Update fire alert status every 3 seconds
         setInterval(() => {
             this.updateFireAlertStatus();
-        }, 3000);
+        }, 4000);
         
         // Initial updates
         this.updateTemperatureHumidityGraph();
