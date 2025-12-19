@@ -11,7 +11,7 @@ El sistema combina reglas basadas en umbrales con análisis inteligente para red
 El sistema monitorea continuamente variables ambientales como temperatura y luminosidad mediante un dispositivo IoT (Arduino / ESP32).  
 Cuando los valores superan umbrales configurables, se genera un evento de riesgo que activa una segunda etapa de validación.
 
-En esta etapa, un smartphone captura imagen y audio del entorno, los cuales son analizados para confirmar o descartar la presencia de fuego.  
+En esta etapa, un smartphone captura video del entorno, los cuales son analizados para confirmar o descartar la presencia de fuego.  
 Finalmente, el sistema clasifica el estado como Normal, Riesgo o Confirmado, almacena los datos, actualiza el dashboard y emite alertas.
 
 Este enfoque multisensor permite una detección más robusta que los sistemas tradicionales basados únicamente en sensores físicos.
@@ -39,7 +39,7 @@ Capas del sistema:
 1. El dispositivo IoT mide variables ambientales.
 2. Los datos se envían al backend mediante HTTP (JSON).
 3. El servidor evalúa los valores con umbrales configurables.
-4. Si se detecta riesgo, se solicita imagen y audio al smartphone.
+4. Si se detecta riesgo, se solicita video al smartphone.
 5. Se analiza la evidencia multimedia.
 6. El sistema clasifica el evento.
 7. El dashboard se actualiza en tiempo real y se generan alertas.
@@ -48,7 +48,7 @@ Capas del sistema:
 
 ## Análisis Inteligente y Reducción de Falsas Alarmas
 
-El sistema utiliza fusión de datos provenientes de sensores ambientales, imagen y audio.
+El sistema utiliza fusión de datos provenientes de sensores ambientales y video.
 
 La decisión final se clasifica en Normal, Riesgo o Confirmado, reduciendo significativamente las falsas alarmas.
 
