@@ -1,147 +1,106 @@
-# API IoT — Sistema de Monitoreo IoT con Arduino y Python
+# API IoT — Sistema Híbrido de Detección Temprana de Incendios
 
-Este proyecto implementa un **sistema de Internet de las Cosas (IoT)** que permite conectar dispositivos físicos (como un **Arduino con sensores**) con una **API desarrollada en Python** y una **interfaz web** para visualizar los datos en tiempo real.
+Este proyecto implementa un sistema híbrido de Internet de las Cosas (IoT) orientado a la detección temprana de focos de incendio, integrando sensores ambientales, un backend IoT, dispositivos móviles y un dashboard web en tiempo real.
 
----
-
-## Descripción General
-
-El sistema está diseñado para recibir datos desde sensores conectados a un Arduino, enviarlos mediante HTTP a una API (backend en **Python Flask**), almacenarlos en una **base de datos SQL** y finalmente mostrarlos a través de una **interfaz web**.
-
-Es ideal para proyectos educativos, de investigación o prototipos IoT donde se requiera monitorear variables ambientales como temperatura, humedad, luz, etc.
+El sistema combina reglas basadas en umbrales con análisis inteligente para reducir falsas alarmas y mejorar la confiabilidad en escenarios reales.
 
 ---
 
-## Arquitectura General
+## Resumen del Proyecto
 
-El flujo de funcionamiento del sistema es el siguiente:
+El sistema monitorea continuamente variables ambientales como temperatura y luminosidad mediante un dispositivo IoT (Arduino / ESP32).  
+Cuando los valores superan umbrales configurables, se genera un evento de riesgo que activa una segunda etapa de validación.
 
-1. **Arduino con sensores:** mide variables del entorno (ej. temperatura o humedad). 
-2. **API IoT (Python Flask):** recibe los datos y los guarda en la base de datos. 
-3. **Base de Datos (SQL):** almacena el historial de mediciones. 
-4. **Interfaz Web (Frontend):** consulta el API y muestra los datos en tiempo real mediante gráficos o tablas.
+En esta etapa, un smartphone captura imagen y audio del entorno, los cuales son analizados para confirmar o descartar la presencia de fuego.  
+Finalmente, el sistema clasifica el estado como Normal, Riesgo o Confirmado, almacena los datos, actualiza el dashboard y emite alertas.
+
+Este enfoque multisensor permite una detección más robusta que los sistemas tradicionales basados únicamente en sensores físicos.
 
 ---
 
-## Diagrama de Flujo del Sistema
+## Arquitectura del Sistema
 
-![Diagrama de Flujo del Sistema IoT](flujo.png)
+El sistema sigue un enfoque distribuido basado en Edge, Fog y Cloud Computing, permitiendo baja latencia, escalabilidad y respuesta en tiempo real.
+
+### Diagrama de Arquitectura General
+
+<img width="911" height="491" alt="Diagrama" src="https://github.com/user-attachments/assets/fc83e57a-8560-47e2-89ee-746e3f772a44" />
+
+Capas del sistema:
+
+- Edge: Arduino / ESP32, sensores ambientales, smartphone
+- Fog: Backend IoT en Python (Flask), evaluación de umbrales y gestión de eventos
+- Cloud: Base de datos, dashboard web y almacenamiento histórico
+
+---
+
+## Flujo de Funcionamiento
+
+1. El dispositivo IoT mide variables ambientales.
+2. Los datos se envían al backend mediante HTTP (JSON).
+3. El servidor evalúa los valores con umbrales configurables.
+4. Si se detecta riesgo, se solicita imagen y audio al smartphone.
+5. Se analiza la evidencia multimedia.
+6. El sistema clasifica el evento.
+7. El dashboard se actualiza en tiempo real y se generan alertas.
+
+---
+
+## Análisis Inteligente y Reducción de Falsas Alarmas
+
+El sistema utiliza fusión de datos provenientes de sensores ambientales, imagen y audio.
+
+La decisión final se clasifica en Normal, Riesgo o Confirmado, reduciendo significativamente las falsas alarmas.
+
+---
+
+## Dashboard Web
+
+![grafico1](https://github.com/user-attachments/assets/ed0dfdb6-6860-41fa-8556-bab7f3687b1f)
+![grafico4](https://github.com/user-attachments/assets/90ca9daa-f62b-4287-a367-2a1f3eab18dd)
+
+El dashboard permite visualizar sensores en tiempo real, el estado global del sistema, evidencia multimedia e historial de eventos.
+
+---
+
+## Alertas por correo electrónico
+
+![email1](https://github.com/user-attachments/assets/33011512-7d58-4ffc-b836-cfac72464576)
+
+El sistema envía alertas automáticas cuando se detecta un posible incendio.
 
 ---
 
 ## Estructura del Proyecto
 
-```
-API_IoT/
-├── arduino_code/          # Código del Arduino para envío de datos
-├── frontend/              # Interfaz web para visualizar lecturas
-├── run.py                 # Punto de entrada del servidor Flask
-├── wsgi.py                # Configuración para despliegue (Gunicorn)
-├── requirements.txt       # Dependencias de Python
-├── Dockerfile             # Imagen base para contenedores
-├── docker-compose.yml     # Orquestador para levantar API + BD + Frontend
-└── IoT.session.sql        # Script SQL para la base de datos
-```
+API_IoT/<br>
+├── arduino_code/<br>
+├── frontend/<br>
+├── docs/<br>
+│   └── img/<br>
+├── run.py<br>
+├── wsgi.py<br>
+├── requirements.txt<br>
+├── Dockerfile<br>
+├── docker-compose.yml<br>
+└── IoT.session.sql<br>
 
 ---
 
 ## Instalación y Ejecución
 
-### 🔸 Opción 1 — Docker (Recomendada)
-
-Asegúrate de tener **Docker** y **Docker Compose** instalados.
-
 ```bash
-# Clonar el repositorio
 git clone https://github.com/santiagoVL03/API_IoT.git
 cd API_IoT
-
-# Construir y levantar los contenedores
 docker compose up --build
 ```
-
-La API quedará disponible en `http://localhost:5000` 
-El frontend en `http://localhost:8080` (o el puerto configurado)
-
----
-
-### 🔸 Opción 2 — Ejecución Local (sin Docker)
-
-1. Crear entorno virtual e instalar dependencias:
-
-```bash
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-2. Configurar las variables de entorno (por ejemplo):
-
-```bash
-export FLASK_APP=run.py
-export DATABASE_URL="sqlite:///iot.db"
-```
-
-3. Ejecutar el servidor:
-
-```bash
-python run.py
-```
-
----
-
-## Conexión con el Arduino
-
-El código del Arduino envía los datos en formato JSON al endpoint de la API, por ejemplo:
-
-```cpp
-#include <WiFi.h>
-#include <HTTPClient.h>
-
-void loop() {
-  float temp = 24.7;
-  float hum  = 62.3;
-
-  HTTPClient http;
-  http.begin("http://<IP_DEL_SERVIDOR>:5000/api/data");
-  http.addHeader("Content-Type", "application/json");
-
-  String json = "{\"temperatura\": " + String(temp) + ", \"humedad\": " + String(hum) + "}";
-  http.POST(json);
-  http.end();
-
-  delay(5000);
-}
-```
-
----
-
-## Tecnologías Utilizadas
-
-| Componente | Tecnología | Descripción |
-|-------------|-------------|--------------|
-| **Backend** | Python Flask | API REST para recibir y procesar datos |
-| **Frontend** | HTML / JS / CSS | Interfaz de usuario para visualizar datos |
-| **Base de Datos** | SQLite / MySQL | Almacenamiento de lecturas IoT |
-| **Hardware** | Arduino / ESP32 | Dispositivo físico que envía las lecturas |
-| **Infraestructura** | Docker / Docker Compose | Despliegue y contenedorización del sistema |
-
----
-
-## Licencia
-
-Este proyecto se distribuye bajo la licencia **MIT**. 
-Puedes usarlo libremente con fines educativos o de investigación.
 
 ---
 
 ## Autores
 
-- **Henry Aron Yanqui Vera**
-- **Freddy Leonel Humpiri Valdivia** 
-- **Santiago Javier Vilca Limachi** 
-- **Manuel Angel Nifla Llallacachi** 
-- **Sennayda Rimache Choquehuanca** 
-
----
-Repositorio original: [github.com/santiagoVL03/API_IoT](https://github.com/santiagoVL03/API_IoT)
+- Henry Aron Yanqui Vera
+- Freddy Leonel Humpiri Valdivia
+- Santiago Javier Vilca Limachi
+- Manuel Ángel Nifla Llallacachi
+- Sennayda Rimache Choquehuanca
