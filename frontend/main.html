@@ -7,6 +7,53 @@
   <title>API IoT Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script>
+    // Camera feed handlers - defined early to be available on page load
+    function handleCameraError() {
+      const cameraStatus = document.getElementById('camera-status');
+      const connectionStatus = document.getElementById('camera-connection-status');
+      const cameraStream = document.getElementById('camera-stream');
+      
+      if (cameraStatus) cameraStatus.textContent = 'Error de Conexión';
+      if (connectionStatus) connectionStatus.textContent = 'Desconectado';
+      
+      // Try to reconnect after 5 seconds
+      setTimeout(() => {
+        if (cameraStream) {
+          cameraStream.src = 'http://10.7.135.53:8080/video?' + new Date().getTime();
+        }
+      }, 5000);
+    }
+
+    function handleCameraLoad() {
+      const cameraStatus = document.getElementById('camera-status');
+      const connectionStatus = document.getElementById('camera-connection-status');
+      const lastUpdate = document.getElementById('camera-last-update');
+      
+      if (cameraStatus) cameraStatus.textContent = 'Conectado';
+      if (connectionStatus) connectionStatus.textContent = 'Activo';
+      if (lastUpdate) {
+        const now = new Date();
+        lastUpdate.textContent = now.toLocaleString('es-ES');
+      }
+    }
+
+    // Initialize camera monitoring when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update camera timestamp periodically
+      setInterval(() => {
+        const cameraStream = document.getElementById('camera-stream');
+        const connectionStatus = document.getElementById('camera-connection-status');
+        if (cameraStream && connectionStatus && connectionStatus.textContent === 'Activo') {
+          const lastUpdate = document.getElementById('camera-last-update');
+          if (lastUpdate) {
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleString('es-ES');
+          }
+        }
+      }, 1000);
+    });
+  </script>
   <style>
     body {
       background-color: #121212;
@@ -228,6 +275,30 @@
         </div>
       </div>
 
+      <!-- Camera Feed Section -->
+      <div class="row mt-4">
+        <div class="card col-12 mb-3 p-3">
+          <h3>Transmisión de Cámara en Vivo</h3>
+          <div id="camera-feed-container">
+            <p>Estado: <span class="sensor-status" id="camera-status">Conectando...</span></p>
+            <div class="camera-video-wrapper" style="display: flex; justify-content: center; align-items: center; background-color: #000; border-radius: 8px; overflow: hidden;">
+              <img id="camera-stream" 
+                   src="http://10.7.135.53:8080/video" 
+                   alt="Transmisión de Cámara" 
+                   style="width: 1280px; height: 720px; max-width: 100%; object-fit: contain; display: block;"
+                   onerror="handleCameraError()"
+                   onload="handleCameraLoad()">
+            </div>
+            <div id="camera-info" class="fire-status-info">
+              <strong>IP:</strong> <span>10.7.135.53:8080</span><br>
+              <strong>Resolución:</strong> <span>1280x720 (720p)</span><br>
+              <strong>Estado de conexión:</strong> <span id="camera-connection-status">Verificando...</span><br>
+              <strong>Última actualización:</strong> <span id="camera-last-update">N/A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Fire Detection Monitoring Section -->
       <div class="row mt-4">
         <div class="card col-12 col-md-8 mb-3 p-3">
@@ -329,3 +400,6 @@
 </body>
 
 </html>
+Uncaught ReferenceError: handleCameraError is not defined
+    onerror file:///home/santiagouwu/Documents/University/API_IoT/frontend/main.html:1
+main.html:1:1

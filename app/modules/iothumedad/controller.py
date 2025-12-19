@@ -11,7 +11,7 @@ class IothumedadController:
         self.email_util = EmailUtil()  # Will load config from email_config.json or env vars
         # Get camera URL from environment variable or use default
         # Common endpoints for IP Webcam app: /video, /videofeed, or just the IP
-        self.camera_url = os.getenv('CAMERA_URL', 'http://10.7.135.29:8080')
+        self.camera_url = os.getenv('CAMERA_URL', 'http://10.7.135.53:8080')
     
     def index(self):
         return {'message':'Hello, World!'}
